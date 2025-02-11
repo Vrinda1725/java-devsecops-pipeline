@@ -24,6 +24,12 @@ jobs:
     name: Run the SCA scan on the source code
     steps:
       - uses: actions/checkout@master
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk CLI
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
       - name: Run Snyk Code Scan (SAST) for SQL Injection & other issues
         run: snyk code test --severity-threshold=high
         env:
