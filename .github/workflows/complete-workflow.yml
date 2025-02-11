@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Run Snyk Code Scan (SAST) for SQL Injection & other issues
-        uses: snyk/actions/code@master
+        run: snyk code test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: RunSnyk to check for vulnerabilities
