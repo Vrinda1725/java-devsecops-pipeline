@@ -9,6 +9,10 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+    <properties>
+        <sonar.organization>Vrinda1725_java-devsecops-pipeline</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
     </properties>
     <dependencies>
         <dependency>
@@ -27,6 +31,7 @@
 #5/11/2022 11:14 AM IST
 #Default Location of CodeCoverage File is target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
 -->
+
 <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
