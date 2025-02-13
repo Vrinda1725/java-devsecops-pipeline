@@ -34,3 +34,12 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vrinda1725_java-devsecops-pipeline
+      - name: Download SonarCloud Analysis Report
+        run: |
+          curl -o sonarcloud-report.json "https://sonarcloud.io/api/measures/component?component=Vrinda1725_java-devsecops-pipeline&metricKeys=bugs,vulnerabilities,code_smells,coverage"
+
+      - name: Upload SonarCloud Report as an Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-report
+          path: sonarcloud-report.json
