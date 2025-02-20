@@ -25,3 +25,10 @@ public class CalculatorTest {
         assertEquals(40, sum);
     }
 }
+
+// Test results are typically stored in:
+// bash
+// Copy
+// Edit
+// target/surefire-reports/ (Maven)
+// build/reports/tests/ (Gradle)
