@@ -47,12 +47,12 @@ jobs:
 
       - name: Run Trivy vulnerability scanner
         run: |
-          OUTPUT_FILE="GitHub Actions/Trivy Automation/scan-results-${DATE}.json"
-          mkdir -p "GitHub Actions/Trivy Automation"
+          mkdir -p "GitHub-Actions/Trivy-Automation"
+          OUTPUT_FILE="GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
           trivy image --format json --ignore-unfixed --vuln-type os,library --severity CRITICAL,HIGH,MEDIUM,LOW -o "$OUTPUT_FILE" nginx:latest
 
       - name: Verify scan results exist
-        run: ls -l "GitHub Actions/Trivy Automation/"
+        run: ls -l "GitHub-Actions/Trivy-Automation/"
 
       - name: Commit scan results to repository
         env:
@@ -61,12 +61,13 @@ jobs:
           git config --global user.name "Vrinda1725"
           git config --global user.email "vrindabhargav25@gmail.com"
           git status
-          git add "GitHub Actions/Trivy Automation/scan-results-${DATE}.json"
-          git commit -m "Add Trivy scan results (${DATE})"
-        
+          git add "GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
       
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.AGITHUB_TOKEN }}
           branch: master
+          message: "Trivy scan results for nginx:latest"
+          author_name: Vrinda1725
+          author_email: vrindabhargav25@gmail.com
