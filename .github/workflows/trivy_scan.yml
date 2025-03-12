@@ -60,6 +60,7 @@ jobs:
         run: |
           git config --global user.name "Vrinda1725"
           git config --global user.email "vrindabhargav25@gmail.com"
+          git status
           git add "GitHub Actions/Trivy Automation/scan-results-${DATE}.json"
           git commit -m "Add Trivy scan results (${DATE})"
         
@@ -67,4 +68,5 @@ jobs:
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.AGITHUB_TOKEN }}
+          branch: master
