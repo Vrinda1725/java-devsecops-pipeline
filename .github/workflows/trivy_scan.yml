@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: Set Date
         id: set-date
@@ -59,4 +62,9 @@ jobs:
           git config --global user.email "vrindabhargav25@gmail.com"
           git add "GitHub Actions/Trivy Automation/scan-results-${DATE}.json"
           git commit -m "Add Trivy scan results (${DATE})"
-          git push https://Vrinda1725:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git master
+        
+      
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
