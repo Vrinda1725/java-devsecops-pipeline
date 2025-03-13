@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read     # Allows reading repository contents
-  issues: write      # Required if the scan results need to create GitHub issues
   security-events: write  # Required for security scan tools like Snyk, SonarCloud
   actions: read     
 
@@ -22,16 +21,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       - name: Set Date
         id: set-date
         run: echo "DATE=$(date +%m.%d.%Y)" >> $GITHUB_ENV
-
-      - name: Create output directory
-        run: mkdir -p "GitHub Actions/Trivy Automation"
 
       - name: Install Trivy
         run: |
@@ -47,27 +40,89 @@ jobs:
 
       - name: Run Trivy vulnerability scanner
         run: |
-          mkdir -p "GitHub-Actions/Trivy-Automation"
-          OUTPUT_FILE="GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
+          mkdir -p trivy-results
+          OUTPUT_FILE="trivy-results/scan-results-${DATE}.json"
           trivy image --format json --ignore-unfixed --vuln-type os,library --severity CRITICAL,HIGH,MEDIUM,LOW -o "$OUTPUT_FILE" nginx:latest
 
-      - name: Verify scan results exist
-        run: ls -l "GitHub-Actions/Trivy-Automation/"
-
-      - name: Commit scan results to repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
-        run: |
-          git config --global user.name "Vrinda1725"
-          git config --global user.email "vrindabhargav25@gmail.com"
-          git status
-          git add "GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
-      
-      - name: Commit & Push changes
-        uses: actions-js/push@master
+      - name: Upload Trivy Scan Results as Artifact
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.AGITHUB_TOKEN }}
-          branch: master
-          message: "Trivy scan results for nginx:latest"
-          author_name: Vrinda1725
-          author_email: vrindabhargav25@gmail.com
+          name: trivy-scan-results
+          path: trivy-results/
+          retention-days: 7  # Store artifacts for 7 days
+
+
+
+# name: Trivy Security Scan for NGINX
+
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     branches:
+#       - master
+
+# permissions:
+#   contents: read     # Allows reading repository contents
+#   issues: write      # Required if the scan results need to create GitHub issues
+#   security-events: write  # Required for security scan tools like Snyk, SonarCloud
+#   actions: read     
+
+# jobs:
+#   build:
+#     name: Scan nginx:latest with Trivy
+#     runs-on: ubuntu-20.04
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           persist-credentials: false
+#           fetch-depth: 0
+
+#       - name: Set Date
+#         id: set-date
+#         run: echo "DATE=$(date +%m.%d.%Y)" >> $GITHUB_ENV
+
+#       - name: Create output directory
+#         run: mkdir -p "GitHub Actions/Trivy Automation"
+
+#       - name: Install Trivy
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y curl
+#           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin v0.57.0
+
+#       - name: Log in to GitHub Container Registry
+#         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+#       - name: Download Trivy vulnerability database
+#         run: trivy image --download-db-only
+
+#       - name: Run Trivy vulnerability scanner
+#         run: |
+#           mkdir -p "GitHub-Actions/Trivy-Automation"
+#           OUTPUT_FILE="GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
+#           trivy image --format json --ignore-unfixed --vuln-type os,library --severity CRITICAL,HIGH,MEDIUM,LOW -o "$OUTPUT_FILE" nginx:latest
+
+#       - name: Verify scan results exist
+#         run: ls -l "GitHub-Actions/Trivy-Automation/"
+
+#       - name: Commit scan results to repository
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
+#         run: |
+#           git config --global user.name "Vrinda1725"
+#           git config --global user.email "vrindabhargav25@gmail.com"
+#           git status
+#           git add "GitHub-Actions/Trivy-Automation/scan-results-${DATE}.json"
+      
+#       - name: Commit & Push changes
+#         uses: actions-js/push@master
+#         with:
+#           github_token: ${{ secrets.AGITHUB_TOKEN }}
+#           branch: master
+#           message: "Trivy scan results for nginx:latest"
+#           author_name: Vrinda1725
+#           author_email: vrindabhargav25@gmail.com
