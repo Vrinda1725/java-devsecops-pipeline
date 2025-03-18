@@ -41,17 +41,27 @@ jobs:
       - name: Download Trivy vulnerability database
         run: trivy image --download-db-only
 
-      - name: Run Trivy vulnerability scanner
-        run: |
-          mkdir -p trivy-results
-          OUTPUT_FILE="trivy-results/scan-results.json"
-          trivy image --format json --ignore-unfixed --pkg-types os,library --severity CRITICAL,HIGH,MEDIUM,LOW -o "$OUTPUT_FILE" bkimminich/juice-shop
-
-      - name: Upload scan results as artifact
-        uses: actions/upload-artifact@v4
+      - name: Run Trivy vulnerability scanner 
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          name: Trivy-Scan-Results
-          path: trivy-results/
+          image-ref: 'bkimminich/juice-shop'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+
+      # - name: Upload scan results as artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: Trivy-Scan-Results
+      #     path: trivy-results/
 
 
 
